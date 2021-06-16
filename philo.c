@@ -1,62 +1,73 @@
 #include "philo.h"
 
-int parse_args(int ac, char **av, t_philo *ph)
+int parse_args(int ac, char **av, t_all *all)
 {
-	ph->num_philo = ft_atoi(av[1]);
-	ph->die = ft_atoi(av[2]);
-	ph->eat = ft_atoi(av[3]);
-	ph->sleep = ft_atoi(av[4]);
-	if (ph->die < 1 || ph->eat < 1 || ph->num_philo < 1 || ph->sleep < 1)
+	all->num_philo = ft_atoi(av[1]);
+	all->time_die = ft_atoi(av[2]);
+	all->time_eat = ft_atoi(av[3]);
+	all->time_sleep = ft_atoi(av[4]);
+	if (all->time_die < 1 || all->time_eat < 1 || all->num_philo < 1 || all->time_sleep < 1)
 		return (1);
 	if (ac == 6)
 	{
-		ph->num_times_to_eat = ft_atoi(av[5]);
-		if (ph->num_times_to_eat < 1)
+		all->num_meals = ft_atoi(av[5]);
+		if (all->num_meals < 1)
 			return (1);
 	}
-	ph->num_forks = ph->num_philo;
+	all->num_forks = all->num_philo;
 	return (0);
 }
 
-void init_args(t_philo *av)
+void init_args(t_all *all)
 {
-	av->die = 0;
-	av->eat = 0;
-	av->num_philo = 0;
-	av->num_times_to_eat = 0;
-	av->sleep = 0;
-	av->num_forks = 0;
+	all->time_die = 0;
+	all->time_eat = 0;
+	all->num_philo = 0;
+	all->num_meals = 0;
+	all->time_sleep = 0;
+	all->num_forks = 0;
 }
 
-void philosophers(void *all)
+void *philosophers(void *all)
 {
+	//puts("1");
 	t_all *alls = (t_all *)all;
-	printf("%d\n", alls->philo->num_philo);
+	//puts("1");
+	//printf("tread %d\n", alls->num_philo);
+	//puts("wewewe");
 	return (0);
 }
 
 int main(int ac, char **av)
 {
-	t_philo philo;
 	t_all all;
 	int status;
-	if (ac < 5 || ac > 6)
-	{
-		printf("Error\n");
-		return (0);
-	}
-	init_args(&philo);
-	if(parse_args(ac, av, &philo))
-	{
-		printf("Error\n");
-		return (0);        
-	}
+	int status_addr;
+	//if (ac < 5 || ac > 6)
+	//{
+	//	printf("Error\n");
+	//	return (0);
+	//}
+	//init_args(&all);
+	//if(parse_args(ac, av, &all))
+	//{
+	//	printf("Error\n");
+	//	return (0);        
+	//}
+	//puts("1");
+	all.thread = (pthread_t *)malloc(sizeof(pthread_t));
 	status = pthread_create(all.thread, NULL, philosophers, (void *)&all);
 	if (status != 0) {
     	printf("main error: can't create thread, status = %d\n", status);
     	exit(0);
     }
 	printf("Hello from main!\n");
+	status = pthread_join(*all.thread, (void**)&status_addr);
+    if (status != 0) {
+        printf("main error: can't join thread, status = %d\n", status);
+        exit(0);
+    }
+    printf("joined with address %d\n", status_addr);
 	//printf("%d\n%d\n", philo.num_philo, all.philo->die);
 	//printf("%d\n", philo.num_philo);
 	return (0);

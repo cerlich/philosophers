@@ -4,20 +4,24 @@
 #include <stdio.h>
 #include <pthread.h>
 #include <unistd.h>
+#include <stdlib.h>
 
 typedef struct s_philo
 {
     int eat;
     int die;
-    int num_philo;
     int sleep;
-    int num_times_to_eat;
-    int num_forks;
     struct s_all *all;   
 } t_philo;
 
 typedef struct s_all
 {
+    int time_eat;
+    int time_die;
+    int time_sleep;    
+    int num_philo;
+    int num_forks;
+    int num_meals;
     pthread_t *thread;
     t_philo *philo;
 }   t_all;
