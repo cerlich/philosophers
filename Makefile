@@ -8,7 +8,7 @@ GFLAGS = -Wall -Wextra -Werror
 
 HEAD = philo.h 
 
-SRCS = philo.c utils.c
+SRCS = philo.c utils.c parse_args.c
 
 OBJS =$(SRCS:.c=.o)
 

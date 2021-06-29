@@ -1,5 +1,31 @@
 #include "philo.h"
 
+int error(int id)
+{
+	if (id == 0)
+		printf("Main error: wrong numbers of args\n");
+	if (id == 1)
+		printf("Main error: invalid args\n");
+	if (id == 2)
+		printf("Malloc error\n");
+	if (id  == 3)
+		printf("Main error: can't create thread\n");
+	if (id  == 4)
+		printf("Main error: can't detach thread\n");
+	exit (1);
+}
+
+long    get_time(void)
+{
+    struct timeval  tp;
+    long            milliseconds;
+
+    gettimeofday(&tp, NULL);
+    milliseconds = tp.tv_sec * 1000;
+    milliseconds += tp.tv_usec / 1000;
+    return (milliseconds);
+}
+
 int		ft_atoi(const char *str)
 {
 	int i;
