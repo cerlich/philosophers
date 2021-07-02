@@ -1,5 +1,22 @@
 #include "philo.h"
 
+void			ft_usleep(long int time_in_ms)
+{
+	long int	start_time;
+
+	start_time = 0;
+	start_time = get_time();
+	while ((get_time() - start_time) < time_in_ms)
+		usleep(time_in_ms / 10);
+}
+
+int		ft_isdigit(int c)
+{
+	if ('0' <= c && c <= '9')
+		return (1);
+	return (0);
+}
+
 int error(int id)
 {
 	if (id == 0)

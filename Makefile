@@ -4,7 +4,7 @@ NAME = philo
 
 CC = gcc
 
-GFLAGS = -Wall -Wextra -Werror
+GFLAGS = -Wall -Wextra -Werror -pthread
 
 HEAD = philo.h 
 
@@ -15,7 +15,7 @@ OBJS =$(SRCS:.c=.o)
 all: $(NAME)
 
 $(NAME): $(OBJS)
-	$(CC) $(CFLAGS) $(SRCS) -o $(NAME)
+	$(CC) $(GFLAGS) $(SRCS) -o $(NAME)
 
 $(OBJS) : %.o : %.c $(HEAD)
 
