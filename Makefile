@@ -4,11 +4,11 @@ NAME = philo
 
 CC = gcc
 
-GFLAGS = -Wall -Wextra -Werror -pthread
+GFLAGS = -Wall -Wextra -Werror #-pthread
 
 HEAD = philo.h 
 
-SRCS = philo.c utils.c parse_args.c
+SRCS = philo.c utils.c parse_args.c start_threads.c
 
 OBJS =$(SRCS:.c=.o)
 
