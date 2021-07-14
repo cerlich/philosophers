@@ -37,8 +37,7 @@ long	get_time(void)
 	long			ms;
 
 	gettimeofday(&tp, NULL);
-	ms = tp.tv_sec * 1000;
-	ms += tp.tv_usec / 1000;
+	ms = tp.tv_sec * 1000 + tp.tv_usec / 1000;
 	return (ms);
 }
 

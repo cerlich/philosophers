@@ -37,6 +37,7 @@ int	init_philo(t_all *all)
 	{
 		all->philo[i].num = i + 1;
 		all->philo[i].eat = 0;
+		all->philo[i].status = 0;
 		all->philo[i].time_die = get_time();
 		all->philo[i].all = all;
 		all->philo[i].num_meals = all->num_meals;

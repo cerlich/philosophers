@@ -24,6 +24,7 @@ void	check_num_meals(t_all *a)
 		{
 			if (a->philo[i].eat >= a->num_meals)
 				count++;
+			usleep(100);
 		}
 		if (count >= a->num_philo)
 		{
@@ -31,9 +32,9 @@ void	check_num_meals(t_all *a)
 			pthread_mutex_lock(a->out);
 			printf(
 				"%zu all philos has eating at least %d times, end simulation\n",
-				get_time(), a->num_meals);
+				get_time() - a->start_time, a->num_meals);
 		}
-		usleep(100);
+		usleep(100000);
 	}
 }
 
@@ -50,6 +51,7 @@ int	main(int ac, char **av)
 		check_num_meals(&a);
 	while (!a.end_sim)
 		usleep(10);
+	usleep(100000);
 	destroy_mutex(&a);
 	return (0);
 }
