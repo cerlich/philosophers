@@ -16,15 +16,18 @@ void	check_num_meals(t_all *a)
 	int		i;
 	int		count;
 
-	while (!a->end_sim)
+	while (1)
 	{
 		i = -1;
 		count = 0;
 		while (++i < a->num_philo)
 		{
 			if (a->philo[i].eat >= a->num_meals)
+			{
+				a->philo[i].status = 1;
 				count++;
-			usleep(100);
+			}
+			usleep(1000);
 		}
 		if (count >= a->num_philo)
 		{
@@ -33,6 +36,7 @@ void	check_num_meals(t_all *a)
 			printf(
 				"%zu all philos has eating at least %d times, end simulation\n",
 				get_time() - a->start_time, a->num_meals);
+			return ;
 		}
 		usleep(100000);
 	}
@@ -44,14 +48,14 @@ int	main(int ac, char **av)
 
 	init_args(&a);
 	if (parse_args(ac, av, &a))
-		error(1);
+		return (1);
 	if (malloc_thread(&a))
 		return (1);
 	if (a.num_meals > 0)
 		check_num_meals(&a);
 	while (!a.end_sim)
-		usleep(10);
-	usleep(100000);
+		usleep(1000);
+	usleep(200000);
 	destroy_mutex(&a);
 	return (0);
 }

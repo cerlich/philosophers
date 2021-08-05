@@ -20,9 +20,11 @@ void	destroy_mutex(t_all *all)
 	int	i;
 
 	i = -1;
+	pthread_mutex_unlock(all->out);
 	while (++i < all->num_forks)
 		pthread_mutex_destroy(&all->fork[i]);
 	pthread_mutex_destroy(all->out);
+	free(all->philo);
 }
 
 int	init_philo(t_all *all)

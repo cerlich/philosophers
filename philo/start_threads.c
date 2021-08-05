@@ -18,14 +18,19 @@ static void	print_info(t_philo *ph, int i)
 	pthread_mutex_unlock(ph->all->out);
 }
 
+static void start_philo(t_philo	*ph)
+{
+	ph->left_fork = &ph->all->fork[ph->num - 1];
+	ph->right_fork = &ph->all->fork[ph->num % ph->all->num_forks];
+	ph->start_time = ph->all->start_time;	
+}
+
 static void	*philos(void *philo)
 {
 	t_philo	*ph;
 
 	ph = (t_philo *)philo;
-	ph->left_fork = &ph->all->fork[ph->num - 1];
-	ph->right_fork = &ph->all->fork[ph->num % ph->all->num_forks];
-	ph->start_time = ph->all->start_time;
+	start_philo(ph);
 	while (!ph->status)
 	{
 		pthread_mutex_lock(ph->left_fork);
@@ -55,7 +60,7 @@ static void	*end_sim(void *philo)
 	ph = (t_philo *)philo;
 	t = ph->all->time_die;
 	ph->time_die = get_time();
-	while (get_time() - ph->time_die <= t)
+	while (get_time() - ph->time_die < t)
 		usleep(100);
 	pthread_mutex_lock(ph->all->out);
 	ph->status = 1;
