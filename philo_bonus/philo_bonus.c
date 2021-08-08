@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "philo.h"
+#include "philo_bonus.h"
 
 static void	init_args(t_all *all)
 {
@@ -41,7 +41,7 @@ static void	check_num_meals(t_all *a, int i, int count)
 		if (count >= a->num_philo)
 		{
 			a->end_sim = 1;
-			pthread_mutex_lock(&a->out);
+			sem_wait(a->out);
 			printf(
 				"%zu all philos has eating at least %d times, end simulation\n",
 				get_time() - a->start_time, a->num_meals);
@@ -58,13 +58,11 @@ int	main(int ac, char **av)
 	init_args(&a);
 	if (parse_args(ac, av, &a))
 		return (1);
-	if (malloc_thread(&a))
+	if (start_thread(&a))
 		return (1);
 	if (a.num_meals > 0)
 		check_num_meals(&a, -1, 0);
-	while (!a.end_sim)
-		usleep(1000);
-	usleep(200000);
-	destroy_mutex(&a);
+	while(!a.end_sim);
+	free(a.philo);
 	return (0);
 }

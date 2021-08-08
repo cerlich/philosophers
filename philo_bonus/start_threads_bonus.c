@@ -10,11 +10,11 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "philo.h"
+#include "philo_bonus.h"
 
 static void	print_info(t_philo *ph, int i)
 {
-	pthread_mutex_lock(&ph->all->out);
+	sem_wait(ph->all->out);
 	if (i == 1)
 		printf("%zu philo %d has taken a fork\n", get_time()
 			- ph->start_time, ph->num);
@@ -27,45 +27,9 @@ static void	print_info(t_philo *ph, int i)
 	if (i == 4)
 		printf("%zu philo %d is thinking\n", get_time()
 			- ph->start_time, ph->num);
-	pthread_mutex_unlock(&ph->all->out);
+	sem_post(ph->all->out);
 }
 
-static void	start_philo(t_philo	*ph)
-{
-	ph->left_fork = &ph->all->fork[ph->num - 1];
-	ph->right_fork = &ph->all->fork[ph->num % ph->all->num_forks];
-	ph->start_time = ph->all->start_time;
-	if (ph->num % 2 == 0)
-		usleep (100);
-}
-
-static void	*philos(void *philo)
-{
-	t_philo	*ph;
-
-	ph = (t_philo *)philo;
-	start_philo(ph);
-	while (!ph->status)
-	{
-		pthread_mutex_lock(ph->left_fork);
-		print_info(ph, 1);
-		pthread_mutex_lock(ph->right_fork);
-		print_info(ph, 1);
-		if (ph->num_meals == -1 || ph->num_meals > 0)
-		{
-			print_info(ph, 2);
-			ph->time_die = get_time();
-			ft_usleep(ph->all->time_eat);
-			++ph->eat;
-			pthread_mutex_unlock(ph->left_fork);
-			pthread_mutex_unlock(ph->right_fork);
-			print_info(ph, 3);
-			ft_usleep(ph->all->time_sleep);
-			print_info(ph, 4);
-		}
-	}
-	return (NULL);
-}
 
 static void	*end_sim(void *philo)
 {
@@ -77,32 +41,69 @@ static void	*end_sim(void *philo)
 	ph->time_die = get_time();
 	while (get_time() - ph->time_die < t)
 		usleep(100);
-	pthread_mutex_lock(&ph->all->out);
+	sem_wait(ph->all->out);
 	ph->status = 1;
 	ph->all->end_sim = 1;
 	printf("%zu philo %d died\n", get_time() - ph->start_time, ph->num);
+	kill(ph->pid, SIGTERM);
 	return (NULL);
 }
 
-int	malloc_thread(t_all *a)
+static int	start_philo(t_philo	*ph)
+{
+	ph->start_time = ph->all->start_time;
+	if (ph->num % 2 == 0)
+		usleep (100);
+	if (pthread_create(&ph->monitor, NULL, end_sim, ph))
+		return (error(5));
+	if (pthread_detach(ph->monitor))
+		return (error(4));
+	return (0);
+}
+
+static void	*philos(void *philo)
+{
+	t_philo	*ph;
+
+	ph = (t_philo *)philo;
+	if(start_philo(ph))
+		return (NULL);
+	while (!ph->status)
+	{
+		sem_wait(ph->all->forks);
+		sem_wait(ph->all->forks);
+		print_info(ph, 1);
+		print_info(ph, 1);
+		if (ph->num_meals == -1 || ph->num_meals > 0)
+		{
+			print_info(ph, 2);
+			ph->time_die = get_time();
+			ft_usleep(ph->all->time_eat);
+			sem_post(ph->all->forks);
+			sem_post(ph->all->forks);			
+			++ph->eat;
+			print_info(ph, 3);
+			ft_usleep(ph->all->time_sleep);
+			print_info(ph, 4);
+		}
+	}
+	return (NULL);
+}
+
+int	start_thread(t_all *a)
 {
 	int	i;
 
 	i = -1;
-	a->thread_philo = (pthread_t *)malloc(sizeof(pthread_t) * a->num_philo);
-	a->thread_death = (pthread_t *)malloc(sizeof(pthread_t) * a->num_philo);
-	if (!a->thread_philo && !a->thread_death)
-		return (error(2));
 	a->start_time = get_time();
 	while (++i < a->num_philo)
 	{
-		if ((pthread_create(&a->thread_philo[i], NULL, philos, &a->philo[i]))
-			|| (pthread_create(&a->thread_death[i],
-					NULL, end_sim, &a->philo[i])))
-			return (error(3));
-		if ((pthread_detach(a->thread_philo[i]))
-			|| (pthread_detach(a->thread_death[i])))
-			return (error(4));
+		a->philo[i].pid = fork();
+		if (a->philo[i].pid < 0)
+			return(error(3));
+		if (philos(&a->philo[i]))
+			kill(a->philo[i].pid, SIGTERM);
 	}
+	//while (1);
 	return (0);
 }

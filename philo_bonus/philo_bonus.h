@@ -13,13 +13,16 @@
 #ifndef PHILO_BONUS_H
 # define PHILO_BONUS_H
 
-# include <stdio.h>
-# include <pthread.h>
 # include <unistd.h>
+# include <stdio.h>
 # include <stdlib.h>
+# include <pthread.h>
 # include <sys/time.h>
-
-typedef pthread_mutex_t	t_mute;
+# include <fcntl.h>
+# include <sys/stat.h>
+# include <semaphore.h>
+# include <sys/types.h>
+# include <signal.h>
 
 typedef struct s_philo
 {
@@ -27,10 +30,10 @@ typedef struct s_philo
 	long			time_die;
 	int				num;
 	int				num_meals;
-	id_t			status;
+	int				status;
 	long			start_time;
-	t_mute			*left_fork;
-	t_mute			*right_fork;
+	pid_t			pid;
+	pthread_t		monitor;
 	struct s_all	*all;
 }					t_philo;
 
@@ -44,12 +47,9 @@ typedef struct s_all
 	int			num_meals;
 	int			end_sim;
 	long		start_time;
-	pthread_t	*thread_philo;
-	pthread_t	*thread_death;
-	pthread_t	*thread_meals;
+	sem_t		*out;
+	sem_t		*forks;
 	t_philo		*philo;
-	t_mute		*fork;
-	t_mute		out;
 }				t_all;
 
 int		main(int ac, char **av);
@@ -60,6 +60,6 @@ int		parse_args(int ac, char **av, t_all *all);
 int		error(int id);
 void	ft_usleep(long time);
 void	destroy_mutex(t_all *all);
-int		malloc_thread(t_all *a);
+int		start_thread(t_all *a);
 
 #endif

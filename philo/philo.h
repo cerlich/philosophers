@@ -27,7 +27,7 @@ typedef struct s_philo
 	long			time_die;
 	int				num;
 	int				num_meals;
-	id_t			status;
+	int				status;
 	long			start_time;
 	t_mute			*left_fork;
 	t_mute			*right_fork;

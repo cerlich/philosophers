@@ -10,33 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "philo.h"
-
-int	init_mutex(t_all *all)
-{
-	int	i;
-
-	i = -1;
-	all->fork = (t_mute *)malloc(sizeof(t_mute) * all->num_forks);
-	if (!all->fork)
-		error(2);
-	while (++i < all->num_forks)
-		pthread_mutex_init(&all->fork[i], NULL);
-	pthread_mutex_init(&all->out, NULL);
-	return (0);
-}
-
-void	destroy_mutex(t_all *all)
-{
-	int	i;
-
-	i = -1;
-	pthread_mutex_unlock(&all->out);
-	while (++i < all->num_forks)
-		pthread_mutex_destroy(&all->fork[i]);
-	pthread_mutex_destroy(&all->out);
-	free(all->philo);
-}
+#include "philo_bonus.h"
 
 int	init_philo(t_all *all)
 {
@@ -45,7 +19,7 @@ int	init_philo(t_all *all)
 	i = -1;
 	all->philo = (t_philo *)malloc(sizeof(t_philo) * all->num_philo);
 	if (!all->philo)
-		error(2);
+		return (error(2));
 	while (++i < all->num_philo)
 	{
 		all->philo[i].num = i + 1;
@@ -96,7 +70,11 @@ int	parse_args(int ac, char **av, t_all *all)
 			return (1);
 	}
 	all->num_forks = all->num_philo;
-	init_mutex(all);
-	init_philo(all);
+	sem_unlink("forks");
+	sem_unlink("out");
+	all->forks = sem_open("forks", O_CREAT, 0644, all->num_forks);
+	all->out = sem_open("out", O_CREAT, 0644, all->num_forks);
+	if (init_philo(all))
+		return (1);
 	return (0);
 }

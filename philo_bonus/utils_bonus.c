@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "philo.h"
+#include "philo_bonus.h"
 
 void	ft_usleep(long time)
 {
@@ -37,9 +37,11 @@ int	error(int id)
 	if (id == 2)
 		printf("Malloc error\n");
 	if (id == 3)
-		printf("Main error: can't create thread\n");
+		printf("Main error: can't fork procces\n");
 	if (id == 4)
 		printf("Main error: can't detach thread\n");
+	if (id == 5)
+		printf("Main error: can't create thread\n");	
 	return (1);
 }
 
