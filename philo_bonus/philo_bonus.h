@@ -49,6 +49,7 @@ typedef struct s_all
 	long		start_time;
 	sem_t		*out;
 	sem_t		*forks;
+	sem_t		*meals;
 	pthread_t	eating;
 	t_philo		*philo;
 }				t_all;
