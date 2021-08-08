@@ -46,28 +46,36 @@ static void	*end_sim(void *philo)
 	ph->all->end_sim = 1;
 	printf("%zu philo %d died\n", get_time() - ph->start_time, ph->num);
 	kill(ph->pid, SIGTERM);
+	//exit(0);
 	return (NULL);
 }
 
-static int	start_philo(t_philo	*ph)
-{
-	ph->start_time = ph->all->start_time;
-	if (ph->num % 2 == 0)
-		usleep (100);
-	if (pthread_create(&ph->monitor, NULL, end_sim, ph))
-		return (error(5));
-	if (pthread_detach(ph->monitor))
-		return (error(4));
-	return (0);
-}
+//static int	start_philo(t_philo	*ph)
+//{
+//	ph->start_time = ph->all->start_time;
+//	if (ph->num % 2 == 0)
+//		usleep (100);
+//	if (pthread_create(&ph->monitor, NULL, end_sim, ph))
+//		return (error(5));
+//	if (pthread_detach(ph->monitor))
+//		return (error(4));
+//	return (0);
+//}
 
-static void	*philos(void *philo)
+static int	philos(void *philo)
 {
 	t_philo	*ph;
 
 	ph = (t_philo *)philo;
-	if(start_philo(ph))
-		return (NULL);
+	//if(start_philo(ph))
+	//	return (1);	
+	if (ph->num % 2 == 0)
+		usleep (100);
+	ph->start_time = ph->all->start_time;
+	if (pthread_create(&ph->monitor, NULL, end_sim, ph))
+		return (error(5));
+	if (pthread_detach(ph->monitor))
+		return (error(4));	
 	while (!ph->status)
 	{
 		sem_wait(ph->all->forks);
@@ -82,12 +90,18 @@ static void	*philos(void *philo)
 			sem_post(ph->all->forks);
 			sem_post(ph->all->forks);			
 			++ph->eat;
+			if (ph->eat >= ph->num_meals && ph->num_meals > 0)
+			{
+				sem_wait(ph->all->out);
+				puts("end simmulation");
+				kill(ph->pid, SIGTERM);
+			}
 			print_info(ph, 3);
 			ft_usleep(ph->all->time_sleep);
 			print_info(ph, 4);
 		}
 	}
-	return (NULL);
+	return (0);
 }
 
 int	start_thread(t_all *a)
@@ -101,9 +115,12 @@ int	start_thread(t_all *a)
 		a->philo[i].pid = fork();
 		if (a->philo[i].pid < 0)
 			return(error(3));
-		if (philos(&a->philo[i]))
-			kill(a->philo[i].pid, SIGTERM);
+		if (a->philo[i].pid == 0)
+		{
+			if (philos(&a->philo[i]))
+				kill(a->philo[i].pid, SIGTERM);
+		}
 	}
-	//while (1);
+	while (1);
 	return (0);
 }

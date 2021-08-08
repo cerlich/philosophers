@@ -1,6 +1,6 @@
 .PHONY = all clean fclean re
 
-NAME = philo
+NAME = philo_bonus
 
 CC = gcc
 

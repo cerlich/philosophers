@@ -49,6 +49,7 @@ typedef struct s_all
 	long		start_time;
 	sem_t		*out;
 	sem_t		*forks;
+	pthread_t	eating;
 	t_philo		*philo;
 }				t_all;
 
@@ -59,7 +60,6 @@ long	get_time(void);
 int		parse_args(int ac, char **av, t_all *all);
 int		error(int id);
 void	ft_usleep(long time);
-void	destroy_mutex(t_all *all);
 int		start_thread(t_all *a);
 
 #endif

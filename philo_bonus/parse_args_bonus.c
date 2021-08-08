@@ -73,7 +73,7 @@ int	parse_args(int ac, char **av, t_all *all)
 	sem_unlink("forks");
 	sem_unlink("out");
 	all->forks = sem_open("forks", O_CREAT, 0644, all->num_forks);
-	all->out = sem_open("out", O_CREAT, 0644, all->num_forks);
+	all->out = sem_open("out", O_CREAT, 0644, 1);
 	if (init_philo(all))
 		return (1);
 	return (0);
