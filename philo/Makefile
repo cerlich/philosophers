@@ -15,7 +15,7 @@ OBJS =$(SRCS:.c=.o)
 all: $(NAME)
 
 $(NAME): $(OBJS)
-	$(CC) $(GFLAGS) $(SRCS) -o $(NAME)
+	$(CC) $(GFLAGS) $(OBJS) -o $(NAME)
 
 $(OBJS) : %.o : %.c $(HEAD)
 
