@@ -6,7 +6,7 @@
 /*   By: cerlich <cerlich@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/05 19:04:06 by cerlich           #+#    #+#             */
-/*   Updated: 2021/08/06 20:31:41 by cerlich          ###   ########.fr       */
+/*   Updated: 2021/08/09 16:24:01 by cerlich          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,6 @@ void	destroy_mutex(t_all *all)
 	int	i;
 
 	i = -1;
-	pthread_mutex_unlock(&all->out);
 	while (++i < all->num_forks)
 		pthread_mutex_destroy(&all->fork[i]);
 	pthread_mutex_destroy(&all->out);
