@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   start_threads.c                                    :+:      :+:    :+:   */
+/*   start_threads_bonus.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: cerlich <cerlich@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/05 19:04:25 by cerlich           #+#    #+#             */
-/*   Updated: 2021/08/06 20:35:24 by cerlich          ###   ########.fr       */
+/*   Updated: 2021/08/09 16:09:08 by cerlich          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,6 @@ static void	print_info(t_philo *ph, int i)
 	sem_post(ph->all->out);
 }
 
-
 static void	*end_sim(void *philo)
 {
 	t_philo	*ph;
@@ -41,6 +40,8 @@ static void	*end_sim(void *philo)
 	ph->time_die = get_time();
 	while (get_time() - ph->time_die < t)
 		usleep(100);
+	if (ph->eat >= ph->num_meals && ph->num_meals > 0)
+		kill(ph->pid, SIGTERM);
 	sem_wait(ph->all->out);
 	ph->status = 1;
 	ph->all->end_sim = 1;
@@ -64,32 +65,24 @@ static int	start_philo(t_philo	*ph)
 static int	philos(void *philo)
 {
 	t_philo	*ph;
-	int val;
 
 	ph = (t_philo *)philo;
-	if(start_philo(ph))
-		return (1);	
+	if (start_philo(ph))
+		return (1);
 	while (!ph->status)
 	{
-		sem_wait(ph->all->forks);
-		sem_wait(ph->all->forks);
-		print_info(ph, 1);
-		print_info(ph, 1);
+		sem_wait(ph->all->forks), sem_wait(ph->all->forks);
+		print_info(ph, 1), print_info(ph, 1);
 		if (ph->num_meals == -1 || ph->num_meals > 0)
 		{
 			print_info(ph, 2);
 			ph->time_die = get_time();
 			ft_usleep(ph->all->time_eat);
 			sem_post(ph->all->forks);
-			sem_post(ph->all->forks);			
+			sem_post(ph->all->forks);
 			++ph->eat;
-			if (ph->eat == ph->num_meals && ph->num_meals > 0)
-			{
-				sem_wait(ph->all->meals);
-			}
-			sem_getvalue(ph->all->meals,&val);
-			if (val == 0)
-				kill(ph->pid, SIGTERM);
+			if (ph->eat >= ph->num_meals && ph->num_meals > 0)
+				return (1);
 			print_info(ph, 3);
 			ft_usleep(ph->all->time_sleep);
 			print_info(ph, 4);
@@ -108,13 +101,17 @@ int	start_thread(t_all *a)
 	{
 		a->philo[i].pid = fork();
 		if (a->philo[i].pid < 0)
-			return(error(3));
+			return (error(3));
 		if (a->philo[i].pid == 0)
 		{
 			if (philos(&a->philo[i]))
+			{
+				sem_close(a->out);
+				sem_close(a->forks);
+				free(a->philo);
 				kill(a->philo[i].pid, SIGTERM);
+			}
 		}
 	}
-	while (1);
 	return (0);
 }

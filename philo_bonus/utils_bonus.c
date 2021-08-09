@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils.c                                            :+:      :+:    :+:   */
+/*   utils_bonus.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: cerlich <cerlich@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/05 19:04:32 by cerlich           #+#    #+#             */
-/*   Updated: 2021/08/05 19:04:35 by cerlich          ###   ########.fr       */
+/*   Updated: 2021/08/09 16:01:19 by cerlich          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ int	error(int id)
 	if (id == 4)
 		printf("Main error: can't detach thread\n");
 	if (id == 5)
-		printf("Main error: can't create thread\n");	
+		printf("Main error: can't create thread\n");
 	return (1);
 }
 

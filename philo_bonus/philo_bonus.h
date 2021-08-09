@@ -6,7 +6,7 @@
 /*   By: cerlich <cerlich@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/05 19:04:18 by cerlich           #+#    #+#             */
-/*   Updated: 2021/08/06 20:37:48 by cerlich          ###   ########.fr       */
+/*   Updated: 2021/08/09 15:56:28 by cerlich          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,8 +49,6 @@ typedef struct s_all
 	long		start_time;
 	sem_t		*out;
 	sem_t		*forks;
-	sem_t		*meals;
-	pthread_t	eating;
 	t_philo		*philo;
 }				t_all;
 
